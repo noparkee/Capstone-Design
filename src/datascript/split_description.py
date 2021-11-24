@@ -6,7 +6,7 @@ TOTAL = 2245
 NUM_TRAIN = int(TOTAL * 0.7)
 NUM_TEST = TOTAL - NUM_TRAIN
 
-data = pd.read_pickle('../data/description.pkl')
+data = pd.read_pickle('../../data/description.pkl')
 #data = data.sample(frac=1).reset_index(drop=True)
 
 print(data)
@@ -20,5 +20,5 @@ for c in list(set(test['label_num'])):
 input()
 train = train.reset_index(drop=True)
 test = test.reset_index(drop=True)
-train.to_pickle('../data/train_description.pkl')
-test.to_pickle('../data/test_description.pkl')
+train.to_pickle('../../data/train_description.pkl')
+test.to_pickle('../../data/test_description.pkl')

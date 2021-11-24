@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
+from keras import optimizers
 
 from data import CustomDataloader
 
@@ -19,14 +20,17 @@ import os
 ITER = 100
 NUM_CLASSES = 8
 BATCH_SIZE = 32
+IMG_HEIGTH = 448
+IMG_WIDTH = 448
+
 print("### ITERATION: " + str(ITER))
 print("### BATCH SIZE: " + str(BATCH_SIZE))
 
 #tf.test.is_gpu_available(cuda_only=False, min_cuda_compute_capability=None)
 
 ### load dataset
-train = CustomDataloader(True, 32)
-test = CustomDataloader(False, 32)
+train = CustomDataloader(True, BATCH_SIZE, IMG_HEIGTH, IMG_WIDTH)
+test = CustomDataloader(False, BATCH_SIZE, IMG_HEIGTH, IMG_WIDTH)
 print("### LOAD DATA")
 
 ### model
@@ -44,7 +48,8 @@ model = Sequential([
   layers.Dense(NUM_CLASSES)
 ])
 
-model.compile(optimizer='adam',
+adam = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+model.compile(optimizer=adam,
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 print('### LOAD MODEL')

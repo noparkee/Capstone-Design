@@ -7,7 +7,7 @@ import numpy as np
 
 
 class CustomDataloader(Sequence):
-    def __init__(self, train, batch_size, shuffle=False):    
+    def __init__(self, train, batch_size, img_height, img_width, shuffle=False):    
         if train:
             self.description = pd.read_pickle('../data/train_description.pkl')
         else:
@@ -15,6 +15,9 @@ class CustomDataloader(Sequence):
 
         self.batch_size = batch_size
         self.shuffle=shuffle
+
+        self.img_height = img_height
+        self.img_width = img_width
 
 
     def __len__(self):
@@ -29,13 +32,10 @@ class CustomDataloader(Sequence):
     
 
     def __get_input(self, path):
-        img_height = 256
-        img_width = 256
-
         ### 이미지 전처리할거면 여기서 더 필요할 듯
         image = tf.keras.preprocessing.image.load_img(path)
         image_arr = tf.keras.preprocessing.image.img_to_array(image)
-        image_arr = tf.image.resize(image_arr,[img_height, img_width]).numpy()
+        image_arr = tf.image.resize(image_arr,[self.img_height, self.img_width]).numpy()
 
         return image_arr/255.
 
