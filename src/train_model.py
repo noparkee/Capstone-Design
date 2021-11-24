@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
-from keras import optimizers
+from tensorflow.keras import optimizers
 
 from data import CustomDataloader
 
