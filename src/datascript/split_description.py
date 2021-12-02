@@ -1,13 +1,18 @@
 import pandas as pd
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--file', type=str, required=True)
+args = parser.parse_args()
+FILE = args.file
 
 
 
-TOTAL = 2245
-NUM_TRAIN = int(TOTAL * 0.7)
-NUM_TEST = TOTAL - NUM_TRAIN
-
-data = pd.read_pickle('../../data/description.pkl')
+data = pd.read_pickle('../../data/' + FILE + '.pkl')
 #data = data.sample(frac=1).reset_index(drop=True)
+TOTAL = len(data)
+NUM_TRAIN = int(TOTAL * 0.8)        # train : test = 7 : 3
+NUM_TEST = TOTAL - NUM_TRAIN
 
 print(data)
 train = data.iloc[:NUM_TRAIN]
@@ -20,5 +25,13 @@ for c in list(set(test['label_num'])):
 input()
 train = train.reset_index(drop=True)
 test = test.reset_index(drop=True)
-train.to_pickle('../../data/train_description.pkl')
-test.to_pickle('../../data/test_description.pkl')
+
+if FILE == 'description':
+    train.to_pickle('../../data/train_description.pkl')
+    test.to_pickle('../../data/test_description.pkl')
+elif FILE == 'coin_description':
+    train.to_pickle('../../data/coin_train_description.pkl')
+    test.to_pickle('../../data/coin_test_description.pkl')
+elif FILE == 'paper_description':
+    train.to_pickle('../../data/paper_train_description.pkl')
+    test.to_pickle('../../data/paper_test_description.pkl')
