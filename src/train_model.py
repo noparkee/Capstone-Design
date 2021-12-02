@@ -85,6 +85,7 @@ loss_fn = tf.keras.losses.CategoricalCrossentropy()
 
 
 for epoch in range(EPOCHES):
+    print("---------- ---------- ----------")
     print("\nStart of epoch %d" % (epoch,))
     start_time = time.time()
 
@@ -131,4 +132,5 @@ for epoch in range(EPOCHES):
     print("===")
 
     print("Time taken: %.2fs" % (time.time() - start_time))
+    print("---------- ---------- ----------")
 
