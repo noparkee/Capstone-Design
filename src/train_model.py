@@ -1,80 +1,43 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import argparse
 import numpy as np
 import pandas as pd
 
 import tensorflow as tf
 from data import CustomDataloader
-from model import get_model
-import sklearn.metrics
+from model import get_model, get_coin_model, get_paper_model
 
 
 
-EPOCHES = 100
+EPOCHES = 30
 NUM_CLASSES = 8
 BATCH_SIZE = 32
-IMG_HEIGTH = 448
-IMG_WIDTH = 448
+IMG_HEIGTH = 224        # 256 -> 224
+IMG_WIDTH = 224
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--type', type=str)
+parser.add_argument('--output', type=str)
+args = parser.parse_args()
+FILE_TYPE = args.type
+OUTPUT = args.output
 
 print("### EPOCHES: " + str(EPOCHES))
 print("### BATCH SIZE: " + str(BATCH_SIZE))
 
 ### load dataset
-train_loader = CustomDataloader(True, BATCH_SIZE, IMG_HEIGTH, IMG_WIDTH)
-test_loader = CustomDataloader(False, BATCH_SIZE, IMG_HEIGTH, IMG_WIDTH)
+train_loader = CustomDataloader(True, FILE_TYPE, BATCH_SIZE, NUM_CLASSES, IMG_HEIGTH, IMG_WIDTH)
+test_loader = CustomDataloader(False, FILE_TYPE, BATCH_SIZE, NUM_CLASSES, IMG_HEIGTH, IMG_WIDTH)
 NUM_BATCHES = len(train_loader)
 print("### LOAD DATA")
 
-### load model
-#model = get_model()
-
-###
-#print_weights = tf.keras.callbacks.LambdaCallback(on_epoch_end=lambda epoch, logs: print(model.layers[3].get_weights()))
-#early_stopping = tf.keras.callbacks.EarlyStopping(patience=15, mode='auto', monitor='val_loss')
-
-'''
-inputs = layers.Input(shape=(IMG_HEIGTH, IMG_WIDTH, 3))
-x = layers.Conv2D(32, 3, padding='same', activation='relu')(inputs)
-x = layers.MaxPooling2D()(x)
-x = layers.Conv2D(32, 3, padding='same', activation='relu')(x)
-x = layers.MaxPooling2D()(x)
-x = layers.Conv2D(32, 3, padding='same', activation='relu')(x)
-x = layers.MaxPooling2D()(x)
-x = layers.Flatten()(x)
-x = layers.Dense(128, activation='relu')(x)
-x = layers.Dropout(rate=0.5)(x)
-cls_outputs = layers.Dense(NUM_CLASSES, activation='softmax')(x)
-
-model = Model(inputs=inputs, outputs=cls_outputs)
-print(model.summary())
-'''
-
-#print(model.summary())
+### model load / get_model: 전체 / get_coin_model: 동전 분류 / get_paper_model: 지폐 분류
+model = get_model(IMG_HEIGTH, IMG_WIDTH, NUM_CLASSES)
+print("### LOAD MODEL")
 
 
-
-#adam = optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-'''model.compile(optimizer='adam',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
-
-print('### START TRAIN')
-history = model.fit(
-  x=train_loader,
-  validation_data=test_loader,
-  epochs=EPOCHES,
-  verbose='auto',
-)
-
-model.save('/content/drive/Shareddrives/캡스톤디자인/model/resnet_based')'''
-
-model = get_model()
-
-loss_train = np.zeros(shape=(EPOCHES,), dtype=np.float32)
-acc_train = np.zeros(shape=(EPOCHES,), dtype=np.float32)
-loss_val = np.zeros(shape=(EPOCHES,))
-acc_val = np.zeros(shape=(EPOCHES,))
 
 train_acc_metric = tf.keras.metrics.CategoricalAccuracy()
 val_acc_metric = tf.keras.metrics.CategoricalAccuracy()
@@ -85,7 +48,7 @@ loss_fn = tf.keras.losses.CategoricalCrossentropy()
 
 
 for epoch in range(EPOCHES):
-    print("---------- ---------- ----------")
+    print("\n---------- ---------- ----------")
     print("\nStart of epoch %d" % (epoch,))
     start_time = time.time()
 
@@ -99,7 +62,7 @@ for epoch in range(EPOCHES):
         optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
         # Update training metric.
-        train_acc_metric.update_state(y_batch_train, logits)
+        train_acc_metric.update_state(y_batch_train, logits)        # update_state: accumulate metric statistic
 
         # Log every 200 batches.
         if step % 10 == 0 or step == 51:    # step == 51이 최종 맞나?
@@ -122,6 +85,10 @@ for epoch in range(EPOCHES):
     # Run a validation loop at the end of each epoch.
     for x_batch_test, y_batch_test in test_loader:
         val_logits = model(x_batch_test, training=False)
+        #print(val_logits)
+        #print(tf.reduce_sum(val_logits, keepdims=True, axis=1))
+        ###
+        # val_logits가 output인데 아마 최대값이 0.2 미만이면 tts는 안 하는게 좋을 것 같음 아니면 0.3?
         # Update val metrics
         val_acc_metric.update_state(y_batch_test, val_logits)
 
@@ -134,3 +101,4 @@ for epoch in range(EPOCHES):
     print("Time taken: %.2fs" % (time.time() - start_time))
     print("---------- ---------- ----------")
 
+model.save('../model/' + OUTPUT)

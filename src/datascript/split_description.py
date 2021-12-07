@@ -10,18 +10,31 @@ FILE = args.file
 
 data = pd.read_pickle('../../data/' + FILE + '.pkl')
 #data = data.sample(frac=1).reset_index(drop=True)
+print(data)
+
+blur = data[data['name'].str.contains('blur')]
+data = data.drop(blur.index).reset_index(drop=True)
+print("after drop blur")
+print(data)
+
 TOTAL = len(data)
-NUM_TRAIN = int(TOTAL * 0.8)        # train : test = 7 : 3
+NUM_TRAIN = int(TOTAL * 0.7)        # train : test = 7 : 3
 NUM_TEST = TOTAL - NUM_TRAIN
 
-print(data)
+### make train data description file
 train = data.iloc[:NUM_TRAIN]
+train = pd.concat([train, blur])
+train = train.sample(frac=1).reset_index(drop=True)
 for c in list(set(train['label_num'])):
     print(str(c) + ': ' + str(list(train['label_num']).count(c)))
 print("===")
+
+### make test data description file
 test = data.iloc[NUM_TRAIN:]
 for c in list(set(test['label_num'])):
     print(str(c) + ': ' + str(list(test['label_num']).count(c)))
+
+print("\nPress the Enter key.")
 input()
 train = train.reset_index(drop=True)
 test = test.reset_index(drop=True)

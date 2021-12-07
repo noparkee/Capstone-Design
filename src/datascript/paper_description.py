@@ -8,7 +8,7 @@ name_lst = []
 label_lst = []
 label_num_lst = []
 
-FOLDER = ['10000won', '5000won', '50000won']
+FOLDER = ['10000won', '5000won', '10000won', '50000won']
 
 for i, F in enumerate(FOLDER):
     if F == 'data.zip' or F == 'description.pkl':

@@ -8,38 +8,26 @@ from sklearn.model_selection import train_test_split
 
 
 
-'''def to_tensor(df):
-
-    image = tf.convert_to_tensor(list(df['img']))    
-    name = tf.convert_to_tensor(list(df['name']))
-    label = tf.convert_to_tensor(list(df['label_num']))
-
-    return image, label      # name, 
-
-
-def load_data():
-    description = pd.read_pickle('../data/description2.pkl')
-    
-    train, test = train_test_split(description, test_size=0.2, random_state=42)  # train과 test
-    train, val = train_test_split(train, test_size=0.2, random_state=42)  # train을 train과 validation으로
-
-    train_x, train_y = to_tensor(train)
-    val_x, val_y = to_tensor(val)
-    test_x, test_y = to_tensor(test)
-
-    return train_x, train_y, val_x, val_y, test_x, test_y'''
-
-
-
 ### - ###
 class CustomDataloader(Sequence):
-    def __init__(self, train, batch_size, img_height, img_width, shuffle=False):    
+    def __init__(self, train, file_type, batch_size, num_classes, img_height, img_width, shuffle=False):    
+        trd = 'train_description.pkl'
+        ted = 'test_description.pkl'
+
+        if file_type == 'coin':
+            trd = 'coin_' + trd
+            ted = 'coin_' + ted
+        elif file_type == 'paper':
+            trd = 'paper_' + trd
+            ted = 'paper_' + ted
+
         if train:
-            self.description = pd.read_pickle('../data/train_description.pkl')
+            self.description = pd.read_pickle('../data/' + trd)
         else:
-            self.description = pd.read_pickle('../data/test_description.pkl')
+            self.description = pd.read_pickle('../data/' + ted)
 
         self.batch_size = batch_size
+        self.num_classes = num_classes
         self.shuffle = shuffle
 
         self.img_height = img_height
@@ -66,8 +54,8 @@ class CustomDataloader(Sequence):
         return image_arr/255.
 
 
-    def __get_output(self, label, num_classes=8):
-        return tf.keras.utils.to_categorical(label, num_classes=num_classes)
+    def __get_output(self, label):
+        return tf.keras.utils.to_categorical(label, num_classes=self.num_classes)
 
 
     def __get_data(self, batches):
