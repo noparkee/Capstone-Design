@@ -1,11 +1,30 @@
 # Capstone-Design
-2021 COSE489
+2021 COSE489   
 
-### 1. Data Augmentation   
-지폐와 동전 앞/뒷면 각각 10장씩 가지고 있는 데이터를 증강.   
-- 지폐의 경우 5가지 범위로 crop, 45도 단위로 rotate, 블러   
-- 동전의 경우 가운데 부분만 crop, 45도 단위로 rotate, 블러   
+_주어진 이미지 인풋에 대해 화폐인지 아닌지 분류하고, 화폐인 경우 어떤 종류의 화폐인지 분류한다._
 
-### 2. Classifier
-Conv2D를 이용한 단순한 classiier 모델   
-현재 성능은 91% 정도 (211016)
+---
+
+## train_model.py
+모델 학습하는 코드, 학습 후 SavedModel 타입과, tflite 타입으로 각각 저장   
+
+화폐인지 아닌지를 분류 하는 모델 학습
+```console
+python train_model.py --type [학습할 모델]
+```
+화폐를 분류하는 모델 학습
+```console
+python train_model.py --type [학습할 모델]
+```
+
+## test_model.py
+SavedModel 타입의 모델을 로드해서 테스트   
+```console
+python test_model.py --binary-model [binary_model_path] --classifier-model [classifier_model] --file-path [test_file_path]
+```
+
+## test_tflite_model.py
+tflite 타입의 모델을 로드해서 테스트   
+```console
+python test_tflite_model.py --binary-model [binary_model_path] --classifier-model [classifier_model] --file-path [test_file_path]
+```
