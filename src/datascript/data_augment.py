@@ -75,7 +75,7 @@ def blur_image(img_file):
 data_dir = '../../data'
 
 # original
-'''paper = ['1000won', '5000won', '10000won', '50000won']
+paper = ['1000won', '5000won', '10000won', '50000won']
 coin = ['10won', '50won', '100won', '500won']
 
 for p in paper:       # 지폐에 대해서
@@ -97,13 +97,4 @@ for c in coin:
     blur_image(image)
   print("Done Folder :" + c)
 print("Done Coin Augmentation...")
-'''
-
-paper_lst = os.listdir(str(data_dir)+"/others")
-for pl in paper_lst:
-    image = Image.open(str(data_dir)+"/others"+"/"+pl)
-    print(pl)
-    crop_image(image)
-    rotate_image(image)
-    #blur_image(image)
 
