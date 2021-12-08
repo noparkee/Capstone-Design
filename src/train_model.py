@@ -12,8 +12,8 @@ from model import get_model, get_coin_model, get_paper_model
 
 
 
-EPOCHES = 5
-NUM_CLASSES = 2
+EPOCHES = 10
+NUM_CLASSES = 8
 BATCH_SIZE = 32
 IMG_HEIGTH = 64        # 256 -> 224
 IMG_WIDTH = 64
@@ -22,6 +22,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--type', type=str)
 args = parser.parse_args()
 FILE_TYPE = args.type
+if FILE_TYPE == 'binary':
+    NUM_CLASSES = 2
 
 print("### EPOCHES: " + str(EPOCHES))
 print("### BATCH SIZE: " + str(BATCH_SIZE))
@@ -64,7 +66,7 @@ for epoch in range(EPOCHES):
         train_acc_metric.update_state(y_batch_train, logits)        # update_state: accumulate metric statistic
 
         # Log every 200 batches.
-        if step % 10 == 0 or step == 51:    # step == 51이 최종 맞나?
+        if step % 10 == 0:    # step == 51이 최종 맞나?
             print(
                 "Training loss (for one batch) at step %d: %.4f"
                 % (step, float(loss_value))
@@ -107,7 +109,9 @@ for epoch in range(EPOCHES):
 
 
 d = datetime.datetime.now()
-FILE_NAME = str(d.month) + str(d.date) + '_' + FILE_TYPE + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
+if FILE_TYPE == None:
+    FILE_TYPE = ''
+FILE_NAME = str(d.month) + str(d.day) + '_' + FILE_TYPE + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
