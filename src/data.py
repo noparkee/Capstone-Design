@@ -55,6 +55,9 @@ class CustomDataloader(Sequence):
 
 
     def __get_output(self, label):
+        #print(label)
+        #print(tf.keras.utils.to_categorical(label, num_classes=self.num_classes))
+        #input()
         return tf.keras.utils.to_categorical(label, num_classes=self.num_classes)
 
 
@@ -63,9 +66,13 @@ class CustomDataloader(Sequence):
         path_batch = batches['path']
         label_batch = batches['label_num']
 
-        images = np.asarray([self.__get_input(x) for x in path_batch])
-        labels = np.asarray([self.__get_output(y) for y in label_batch])       # (BATCH_SIZE, NUM_CLASSES) --> categorical_crossentropy
-        #labels = np.asarray(label_batch)                                        # (BATCH_SIZE, ) --> sparse_categorical_crossentropy
+        #images = np.asarray()
+        #labels = np.asarray()       
+        #labels = np.asarray(label_batch)                                        
+        
+        images = tf.convert_to_tensor([self.__get_input(x) for x in path_batch])
+        labels = tf.convert_to_tensor([self.__get_output(y) for y in label_batch])  # (BATCH_SIZE, NUM_CLASSES) --> categorical_crossentropy
+        #labels = tf.convert_to_tensor(label_batch)     # (BATCH_SIZE, ) --> sparse_categorical_crossentropy
         
         return images, labels
     

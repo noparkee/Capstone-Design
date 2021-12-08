@@ -35,7 +35,7 @@ def get_model(img_height, img_width, num_classes):
     ### - classifier
     x = Dense(128, activation='relu')(features)
     x = Dropout(rate=0.3)(x)
-    cls_outputs = Dense(num_classes, activation='softmax', name='classifier_softmax')(x)
+    cls_outputs = Dense(num_classes, activation=tf.nn.softmax, name='classifier_softmax')(x)
 
     ### - build model
     model = keras.Model(inputs=inputs, outputs=cls_outputs)

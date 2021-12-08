@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import datetime
 import argparse
 import numpy as np
 import pandas as pd
@@ -11,18 +12,16 @@ from model import get_model, get_coin_model, get_paper_model
 
 
 
-EPOCHES = 30
+EPOCHES = 10
 NUM_CLASSES = 8
 BATCH_SIZE = 32
-IMG_HEIGTH = 224        # 256 -> 224
-IMG_WIDTH = 224
+IMG_HEIGTH = 64        # 256 -> 224
+IMG_WIDTH = 64
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--type', type=str)
-parser.add_argument('--output', type=str)
 args = parser.parse_args()
 FILE_TYPE = args.type
-OUTPUT = args.output
 
 print("### EPOCHES: " + str(EPOCHES))
 print("### BATCH SIZE: " + str(BATCH_SIZE))
@@ -72,6 +71,10 @@ for epoch in range(EPOCHES):
             )
             print("Seen so far: %d samples" % ((step + 1) * BATCH_SIZE))
 
+        #print(y_batch_train)
+        #print(logits)
+        #input()
+
     # Display metrics at the end of each epoch.
     train_acc = train_acc_metric.result()
     print("===")
@@ -101,4 +104,17 @@ for epoch in range(EPOCHES):
     print("Time taken: %.2fs" % (time.time() - start_time))
     print("---------- ---------- ----------")
 
-model.save('../model/' + OUTPUT)
+
+
+d = datetime.datetime.now()
+FILE_NAME = str(d.month) + str(d.date) + '_' + BATCH_SIZE + '_' + IMG_HEIGTH + 'x' + IMG_WIDTH
+
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+# tflite
+with open('../model/' + FILE_NAME + '.tflite', 'wb') as f:
+  f.write(tflite_model)
+
+# savedmodel
+model.save('../model/' + FILE_NAME)
+
