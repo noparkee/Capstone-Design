@@ -20,12 +20,16 @@ class CustomDataloader(Sequence):
         elif file_type == 'paper':
             trd = 'paper_' + trd
             ted = 'paper_' + ted
+        elif file_type == 'binary':
+            trd = 'binary_' + trd
+            ted = 'binary_' + ted
 
         if train:
             self.description = pd.read_pickle('../data/' + trd)
         else:
             self.description = pd.read_pickle('../data/' + ted)
 
+        self.file_type = file_type
         self.batch_size = batch_size
         self.num_classes = num_classes
         self.shuffle = shuffle
@@ -64,7 +68,10 @@ class CustomDataloader(Sequence):
     def __get_data(self, batches):
         # Generates data containing batch_size samples
         path_batch = batches['path']
-        label_batch = batches['label_num']
+        if self.file_type == 'binary':
+            label_batch = batches['money_num']
+        else:
+            label_batch = batches['label_num']
 
         #images = np.asarray()
         #labels = np.asarray()       

@@ -12,8 +12,8 @@ from model import get_model, get_coin_model, get_paper_model
 
 
 
-EPOCHES = 10
-NUM_CLASSES = 8
+EPOCHES = 5
+NUM_CLASSES = 2
 BATCH_SIZE = 32
 IMG_HEIGTH = 64        # 256 -> 224
 IMG_WIDTH = 64
@@ -107,7 +107,7 @@ for epoch in range(EPOCHES):
 
 
 d = datetime.datetime.now()
-FILE_NAME = str(d.month) + str(d.date) + '_' + BATCH_SIZE + '_' + IMG_HEIGTH + 'x' + IMG_WIDTH
+FILE_NAME = str(d.month) + str(d.date) + '_' + FILE_TYPE + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()

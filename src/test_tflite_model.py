@@ -26,6 +26,10 @@ image_arr = tf.image.resize(image_arr,[input_shape[1], input_shape[2]]).numpy() 
 image_arr = image_arr/255.
 image_arr = np.expand_dims(image_arr, axis=0)
 
+print(image_arr)
+with open('image_arr', 'wb') as f:
+  f.write(image_arr)
+
 print(input_details)
 print(output_details)
 interpreter.set_tensor(input_details[0]['index'], image_arr)
