@@ -8,7 +8,7 @@ FILE = args.file
 
 
 
-data = pd.read_pickle('../../data/' + FILE + '.pkl')
+data = pd.read_pickle('../../data/binary_description.pkl')
 #data = data.sample(frac=1).reset_index(drop=True)
 print(data)
 

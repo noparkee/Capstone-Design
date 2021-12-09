@@ -8,22 +8,30 @@ import pandas as pd
 
 import tensorflow as tf
 from data import CustomDataloader
-from model import get_model, get_coin_model, get_paper_model
+from model import get_model
 
 
 
-EPOCHES = 10
+### default value
+EPOCHES = 15
 NUM_CLASSES = 8
 BATCH_SIZE = 32
 IMG_HEIGTH = 64        # 256 -> 224
 IMG_WIDTH = 64
 
+
+### changes values
 parser = argparse.ArgumentParser()
 parser.add_argument('--type', type=str)
+parser.add_argument('--epoches', type=int)
 args = parser.parse_args()
+
 FILE_TYPE = args.type
 if FILE_TYPE == 'binary':
     NUM_CLASSES = 2
+if args.epoches != None:
+    EPOCHES = args.epoches
+
 
 print("### EPOCHES: " + str(EPOCHES))
 print("### BATCH SIZE: " + str(BATCH_SIZE))
@@ -111,7 +119,7 @@ for epoch in range(EPOCHES):
 d = datetime.datetime.now()
 if FILE_TYPE == None:
     FILE_TYPE = ''
-FILE_NAME = str(d.month) + str(d.day) + '_' + FILE_TYPE + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
+FILE_NAME = d.strtime('%Y-%m-%d-%H-%M') + '_' + FILE_TYPE + '_' + str(EPOCHES) + '_' + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()

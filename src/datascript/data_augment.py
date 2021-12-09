@@ -1,13 +1,14 @@
-import numpy as np
 import os
-import PIL
+import numpy as np
+import argparse
 from PIL import Image, ImageFilter
 
-import matplotlib.pyplot as plt
 
-import pathlib
-import glob
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--type', type=str)
+args = parser.parse_args()
+TYPE = args.type
 
 
 def crop_image(img_file):
@@ -74,27 +75,36 @@ def blur_image(img_file):
 
 data_dir = '../../data'
 
-# original
-paper = ['1000won', '5000won', '10000won', '50000won']
-coin = ['10won', '50won', '100won', '500won']
-
-for p in paper:       # 지폐에 대해서
-  paper_lst = os.listdir(str(data_dir)+"/"+p)
-  for pl in paper_lst:
-    image = Image.open(str(data_dir)+"/"+p+"/"+pl)
+if TYPE == 'binary':
+  # for "others" folder
+  others_lst = os.listdir(str(data_dir)+"/others")
+  for ol in others_lst:
+    image = Image.open(str(data_dir)+"/others"+"/"+ol)
+    print(ol)
     crop_image(image)
     rotate_image(image)
     blur_image(image)
-  print("Done Folder :" + p)
-print("Done Paper Augmentation...")
+else:
+  # original
+  paper = ['1000won', '5000won', '10000won', '50000won']
+  coin = ['10won', '50won', '100won', '500won']
 
-for c in coin:
-  coin_lst = os.listdir(str(data_dir)+"/"+c)
-  for cl in coin_lst:
-    image = Image.open(str(data_dir)+"/"+c+"/"+cl)
-    crop_image(image)
-    rotate_image(image)
-    blur_image(image)
-  print("Done Folder :" + c)
-print("Done Coin Augmentation...")
+  for p in paper:       # 지폐에 대해서
+    paper_lst = os.listdir(str(data_dir)+"/"+p)
+    for pl in paper_lst:
+      image = Image.open(str(data_dir)+"/"+p+"/"+pl)
+      crop_image(image)
+      rotate_image(image)
+      blur_image(image)
+    print("Done Folder :" + p)
+  print("Done Paper Augmentation...")
 
+  for c in coin:
+    coin_lst = os.listdir(str(data_dir)+"/"+c)
+    for cl in coin_lst:
+      image = Image.open(str(data_dir)+"/"+c+"/"+cl)
+      crop_image(image)
+      rotate_image(image)
+      blur_image(image)
+    print("Done Folder :" + c)
+  print("Done Coin Augmentation...")

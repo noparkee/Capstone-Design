@@ -1,14 +1,22 @@
 import pandas as pd
 import argparse
 
+
+
 parser = argparse.ArgumentParser()
-parser.add_argument('--file', type=str, required=True)
+parser.add_argument('--type', type=str)
 args = parser.parse_args()
-FILE = args.file
+FILE_TYPE = args.type
+
+if FILE_TYPE == 'binary':
+    FILE_TYPE = 'binary_'
+    LABEL = 'money_num'
+else:
+    FILE_TYPE = ''
+    LABEL = 'label_num'
 
 
-
-data = pd.read_pickle('../../data/' + FILE + '.pkl')
+data = pd.read_pickle('../../data/'+ FILE_TYPE +'description.pkl')
 #data = data.sample(frac=1).reset_index(drop=True)
 print(data)
 
@@ -25,26 +33,20 @@ NUM_TEST = TOTAL - NUM_TRAIN
 train = data.iloc[:NUM_TRAIN]
 train = pd.concat([train, blur])
 train = train.sample(frac=1).reset_index(drop=True)
-for c in list(set(train['label_num'])):
-    print(str(c) + ': ' + str(list(train['label_num']).count(c)))
+for c in list(set(train[LABEL])):
+    print(str(c) + ': ' + str(list(train[LABEL]).count(c)))
 print("===")
 
 ### make test data description file
 test = data.iloc[NUM_TRAIN:]
-for c in list(set(test['label_num'])):
-    print(str(c) + ': ' + str(list(test['label_num']).count(c)))
+for c in list(set(test[LABEL])):
+    print(str(c) + ': ' + str(list(test[LABEL]).count(c)))
 
 print("\nPress the Enter key.")
 input()
 train = train.reset_index(drop=True)
 test = test.reset_index(drop=True)
 
-if FILE == 'description':
-    train.to_pickle('../../data/train_description.pkl')
-    test.to_pickle('../../data/test_description.pkl')
-elif FILE == 'coin_description':
-    train.to_pickle('../../data/coin_train_description.pkl')
-    test.to_pickle('../../data/coin_test_description.pkl')
-elif FILE == 'paper_description':
-    train.to_pickle('../../data/paper_train_description.pkl')
-    test.to_pickle('../../data/paper_test_description.pkl')
+### save description file
+train.to_pickle('../../data/' + FILE_TYPE + 'train_description.pkl')
+test.to_pickle('../../data/' + FILE_TYPE + 'test_description.pkl')
