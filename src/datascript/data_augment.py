@@ -11,11 +11,11 @@ args = parser.parse_args()
 TYPE = args.type
 
 
-def crop_image(img_file):
+def crop_image(img_file, only_center):
   fn = img_file.filename
   img_width, img_height = img_file.size
   
-  if img_width != img_height:
+  if only_center:
     m = min(img_width, img_height)
     img = img_file.crop((img_width//2 - m//2 , img_height//2 - m//2, img_width//2 + m//2 , img_height//2 + m//2))
     img_width = m
@@ -75,7 +75,7 @@ def blur_image(img_file):
 
 data_dir = '../../data'
 
-if TYPE == 'binary':
+if TYPE == 'others':
   # for "others" folder
   others_lst = os.listdir(str(data_dir)+"/others")
   for ol in others_lst:
@@ -93,17 +93,17 @@ else:
     paper_lst = os.listdir(str(data_dir)+"/"+p)
     for pl in paper_lst:
       image = Image.open(str(data_dir)+"/"+p+"/"+pl)
-      crop_image(image)
+      crop_image(image, False)
       rotate_image(image)
       blur_image(image)
     print("Done Folder :" + p)
   print("Done Paper Augmentation...")
 
-  for c in coin:
+  for c in coin:      # 동전에 대해서
     coin_lst = os.listdir(str(data_dir)+"/"+c)
     for cl in coin_lst:
       image = Image.open(str(data_dir)+"/"+c+"/"+cl)
-      crop_image(image)
+      crop_image(image, True)
       rotate_image(image)
       blur_image(image)
     print("Done Folder :" + c)

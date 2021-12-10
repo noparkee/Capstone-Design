@@ -8,7 +8,7 @@ import pandas as pd
 
 import tensorflow as tf
 from data import CustomDataloader
-from model import get_model
+from model import get_model, temp_model, temp2_model
 
 
 
@@ -16,8 +16,25 @@ from model import get_model
 EPOCHES = 15
 NUM_CLASSES = 8
 BATCH_SIZE = 32
-IMG_HEIGTH = 64        # 256 -> 224
-IMG_WIDTH = 64
+IMG_HEIGTH = 32        # 256 -> 224
+IMG_WIDTH = 32
+
+
+def save_model(ft, epoch, model):
+    d = datetime.datetime.now()
+    if ft == None:
+        ft = ''
+    FILE_NAME = d.strftime('%Y-%m-%d-%H:%M') + '_' + ft + '_' + str(epoch) + '_' + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
+
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    tflite_model = converter.convert()
+    # tflite
+    with open('../model/' + FILE_NAME + '.tflite', 'wb') as f:
+        f.write(tflite_model)
+
+    # savedmodel
+    model.save('../model/' + FILE_NAME)
+
 
 
 ### changes values
@@ -35,6 +52,7 @@ if args.epoches != None:
 
 print("### EPOCHES: " + str(EPOCHES))
 print("### BATCH SIZE: " + str(BATCH_SIZE))
+print("### INPUT SIZE: " + str(IMG_HEIGTH))
 
 ### load dataset
 train_loader = CustomDataloader(True, FILE_TYPE, BATCH_SIZE, NUM_CLASSES, IMG_HEIGTH, IMG_WIDTH)
@@ -43,7 +61,12 @@ NUM_BATCHES = len(train_loader)
 print("### LOAD DATA")
 
 ### model load / get_model: 전체 / get_coin_model: 동전 분류 / get_paper_model: 지폐 분류
-model = get_model(IMG_HEIGTH, IMG_WIDTH, NUM_CLASSES)
+if FILE_TYPE == 'temp':
+    model = temp_model(IMG_HEIGTH, IMG_WIDTH, NUM_CLASSES)
+elif FILE_TYPE == 'temp2':
+    model = temp2_model(IMG_HEIGTH, IMG_WIDTH, NUM_CLASSES)
+else:
+    model = get_model(IMG_HEIGTH, IMG_WIDTH, NUM_CLASSES)
 print("### LOAD MODEL")
 
 
@@ -53,8 +76,6 @@ val_acc_metric = tf.keras.metrics.CategoricalAccuracy()
 
 optimizer = tf.keras.optimizers.Adam()
 loss_fn = tf.keras.losses.CategoricalCrossentropy()
-
-
 
 for epoch in range(EPOCHES):
     print("\n---------- ---------- ----------")
@@ -114,19 +135,8 @@ for epoch in range(EPOCHES):
     print("Time taken: %.2fs" % (time.time() - start_time))
     print("---------- ---------- ----------")
 
+    if epoch == 9:
+        save_model(FILE_TYPE, epoch+1, model)
 
-
-d = datetime.datetime.now()
-if FILE_TYPE == None:
-    FILE_TYPE = ''
-FILE_NAME = d.strtime('%Y-%m-%d-%H-%M') + '_' + FILE_TYPE + '_' + str(EPOCHES) + '_' + str(BATCH_SIZE) + '_' + str(IMG_HEIGTH) + 'x' + str(IMG_WIDTH)
-
-converter = tf.lite.TFLiteConverter.from_keras_model(model)
-tflite_model = converter.convert()
-# tflite
-with open('../model/' + FILE_NAME + '.tflite', 'wb') as f:
-  f.write(tflite_model)
-
-# savedmodel
-model.save('../model/' + FILE_NAME)
-
+### 마지막 epoch
+save_model(FILE_TYPE, EPOCHES, model)

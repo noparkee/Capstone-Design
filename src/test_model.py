@@ -22,6 +22,8 @@ LABEL_TO_NAME = ['10won', '100won', '1000won', '10000won', '50won', '500won', '5
 
 ### money or not
 binary_model = keras.models.load_model(BINARY_MODEL)
+keras.utils.plot_model(binary_model, to_file='binary.png')
+input()
 
 img_height = binary_model.input.shape[1]
 img_width = binary_model.input.shape[2]
